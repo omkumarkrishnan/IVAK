@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { LogOut, User, Home, BarChart3, CheckCircle, Clock, FileText, Users } from 'lucide-react';
+import { LogOut, User, Home, BarChart3, CheckCircle, FileText, Users } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { Department, Period, DLI, Verification } from '../types/database';
 import { UserManagement } from '../components/UserManagement';
@@ -12,7 +12,6 @@ interface DashboardProps {
 interface VerificationStats {
   total: number;
   verified: number;
-  submitted: number;
   nonVerified: number;
 }
 
@@ -35,7 +34,6 @@ export function DashboardPage({ onNavigateHome }: DashboardProps) {
   const [overallStats, setOverallStats] = useState<VerificationStats>({
     total: 0,
     verified: 0,
-    submitted: 0,
     nonVerified: 0,
   });
   const [departmentStats, setDepartmentStats] = useState<DepartmentStats[]>([]);
@@ -120,8 +118,7 @@ export function DashboardPage({ onNavigateHome }: DashboardProps) {
 
       const overall: VerificationStats = {
         total: verificationsArray.length,
-        verified: verificationsArray.filter((v) => v.state === 'verified').length,
-        submitted: verificationsArray.filter((v) => v.state === 'submitted').length,
+        verified: verificationsArray.filter((v) => v.state === 'verified' || v.state === 'submitted').length,
         nonVerified: verificationsArray.filter((v) => v.state === 'non-verified').length,
       };
       setOverallStats(overall);
@@ -134,8 +131,7 @@ export function DashboardPage({ onNavigateHome }: DashboardProps) {
         return {
           department: dept,
           total: deptVerifications.length,
-          verified: deptVerifications.filter((v) => v.state === 'verified').length,
-          submitted: deptVerifications.filter((v) => v.state === 'submitted').length,
+          verified: deptVerifications.filter((v) => v.state === 'verified' || v.state === 'submitted').length,
           nonVerified: deptVerifications.filter((v) => v.state === 'non-verified').length,
         };
       });
@@ -150,8 +146,7 @@ export function DashboardPage({ onNavigateHome }: DashboardProps) {
         periodStatsMap.set(period.id, {
           period,
           total: periodVerifications.length,
-          verified: periodVerifications.filter((v) => v.state === 'verified').length,
-          submitted: periodVerifications.filter((v) => v.state === 'submitted').length,
+          verified: periodVerifications.filter((v) => v.state === 'verified' || v.state === 'submitted').length,
           nonVerified: periodVerifications.filter((v) => v.state === 'non-verified').length,
         });
       });
@@ -162,8 +157,7 @@ export function DashboardPage({ onNavigateHome }: DashboardProps) {
         return {
           dli,
           total: dliVerifications.length,
-          verified: dliVerifications.filter((v) => v.state === 'verified').length,
-          submitted: dliVerifications.filter((v) => v.state === 'submitted').length,
+          verified: dliVerifications.filter((v) => v.state === 'verified' || v.state === 'submitted').length,
           nonVerified: dliVerifications.filter((v) => v.state === 'non-verified').length,
         };
       });
@@ -206,18 +200,6 @@ export function DashboardPage({ onNavigateHome }: DashboardProps) {
             <span className="text-lg font-bold text-green-700">{stats.verified}</span>
             <span className="text-xs text-slate-500">
               ({getPercentage(stats.verified, stats.total)}%)
-            </span>
-          </div>
-        </div>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-amber-600" />
-            <span className="text-sm text-slate-600">Submitted</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-bold text-amber-700">{stats.submitted}</span>
-            <span className="text-xs text-slate-500">
-              ({getPercentage(stats.submitted, stats.total)}%)
             </span>
           </div>
         </div>
@@ -334,18 +316,6 @@ export function DashboardPage({ onNavigateHome }: DashboardProps) {
                 <div className="bg-white rounded-lg border border-slate-200 p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-slate-600 mb-1">Submitted</p>
-                      <p className="text-3xl font-bold text-amber-700">{overallStats.submitted}</p>
-                      <p className="text-xs text-slate-500 mt-1">
-                        {getPercentage(overallStats.submitted, overallStats.total)}% of total
-                      </p>
-                    </div>
-                    <Clock className="w-10 h-10 text-amber-600" />
-                  </div>
-                </div>
-                <div className="bg-white rounded-lg border border-slate-200 p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
                       <p className="text-sm text-slate-600 mb-1">Not Verified</p>
                       <p className="text-3xl font-bold text-slate-700">{overallStats.nonVerified}</p>
                       <p className="text-xs text-slate-500 mt-1">
@@ -374,18 +344,6 @@ export function DashboardPage({ onNavigateHome }: DashboardProps) {
                           <span className="text-lg font-bold text-green-700">{stat.verified}</span>
                           <span className="text-xs text-slate-500">
                             ({getPercentage(stat.verified, stat.total)}%)
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4 text-amber-600" />
-                          <span className="text-sm text-slate-600">Submitted</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-lg font-bold text-amber-700">{stat.submitted}</span>
-                          <span className="text-xs text-slate-500">
-                            ({getPercentage(stat.submitted, stat.total)}%)
                           </span>
                         </div>
                       </div>
