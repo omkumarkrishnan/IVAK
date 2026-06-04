@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { LogOut, User, RefreshCw, BarChart3, Trash2, UserPlus, Users } from 'lucide-react';
+import { LogOut, User, RefreshCw, BarChart3, Trash2, UserPlus, Users, FileCheck } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { DepartmentWithDLIs } from '../types/database';
 import { DepartmentList } from '../components/DepartmentList';
 import { ConfirmationModal } from '../components/ConfirmationModal';
 import { AddUserModal } from '../components/AddUserModal';
 import { UserManagement } from '../components/UserManagement';
+import { BulkIVAUploadModal } from '../components/BulkIVAUploadModal';
 
 interface HomePageProps {
   onNavigateDashboard: () => void;
@@ -20,6 +21,9 @@ export function HomePage({ onNavigateDashboard }: HomePageProps) {
   const [clearing, setClearing] = useState(false);
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [showUserManagement, setShowUserManagement] = useState(false);
+  const [showBulkIVAUpload, setShowBulkIVAUpload] = useState(false);
+
+  const canUploadIVA = ['admin', 'consultant', 'field_agent', 'iva'].includes(profile?.role || '');
 
   useEffect(() => {
     console.log('Profile:', profile);
@@ -159,6 +163,15 @@ export function HomePage({ onNavigateDashboard }: HomePageProps) {
                   <span className="text-sm font-medium">Dashboard</span>
                 </button>
               )}
+              {canUploadIVA && (
+                <button
+                  onClick={() => setShowBulkIVAUpload(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg transition-colors"
+                >
+                  <FileCheck className="w-4 h-4" />
+                  <span className="text-sm font-medium">Upload IVA Reports</span>
+                </button>
+              )}
               <button
                 onClick={fetchDepartments}
                 className="flex items-center gap-2 px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
@@ -232,6 +245,15 @@ export function HomePage({ onNavigateDashboard }: HomePageProps) {
 
       {showUserManagement && (
         <UserManagement onClose={() => setShowUserManagement(false)} />
+      )}
+
+      {showBulkIVAUpload && (
+        <BulkIVAUploadModal
+          onClose={() => setShowBulkIVAUpload(false)}
+          onComplete={() => {
+            fetchDepartments();
+          }}
+        />
       )}
     </div>
   );
