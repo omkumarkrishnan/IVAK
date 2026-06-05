@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { LogOut, User, Home, BarChart3, CheckCircle, Clock, FileText, Users } from 'lucide-react';
+import { LogOut, User, Home, BarChart3, CheckCircle, Clock, FileText, Users, Download } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { Department, Period, DLI, Verification } from '../types/database';
 import { UserManagement } from '../components/UserManagement';
+import { generateStatusReport } from '../lib/generateStatusReport';
 
 interface DashboardProps {
   onNavigateHome: () => void;
@@ -31,6 +32,7 @@ interface DLIStats extends VerificationStats {
 export function DashboardPage({ onNavigateHome }: DashboardProps) {
   const { profile, signOut } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [generatingReport, setGeneratingReport] = useState(false);
   const [showUserManagement, setShowUserManagement] = useState(false);
   const [overallStats, setOverallStats] = useState<VerificationStats>({
     total: 0,
@@ -180,6 +182,17 @@ export function DashboardPage({ onNavigateHome }: DashboardProps) {
     return Math.round((value / total) * 100);
   };
 
+  const handleDownloadReport = async () => {
+    setGeneratingReport(true);
+    try {
+      await generateStatusReport();
+    } catch (err) {
+      console.error('Failed to generate report:', err);
+    } finally {
+      setGeneratingReport(false);
+    }
+  };
+
   const formatDepartmentName = (name: string) => {
     const match = name.match(/^(.+?)\s*\((DLI \d+)\)$/);
     if (match) {
@@ -273,6 +286,20 @@ export function DashboardPage({ onNavigateHome }: DashboardProps) {
                   <span className="text-sm font-medium">Manage Users</span>
                 </button>
               )}
+              <button
+                onClick={handleDownloadReport}
+                disabled={generatingReport || loading}
+                className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white hover:bg-slate-800 rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {generatingReport ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                ) : (
+                  <Download className="w-4 h-4" />
+                )}
+                <span className="text-sm font-medium">
+                  {generatingReport ? 'Generating...' : 'Status Report'}
+                </span>
+              </button>
               <button
                 onClick={onNavigateHome}
                 className="flex items-center gap-2 px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
