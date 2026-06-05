@@ -181,13 +181,6 @@ export function HomePage({ onNavigateDashboard }: HomePageProps) {
                 </button>
               )}
               <button
-                onClick={() => setShowMinutes(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-slate-700 text-white hover:bg-slate-600 rounded-lg transition-colors"
-              >
-                <ScrollText className="w-4 h-4" />
-                <span className="text-sm font-medium">Minutes & Decisions</span>
-              </button>
-              <button
                 onClick={fetchDepartments}
                 className="flex items-center gap-2 px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
               >
@@ -216,6 +209,26 @@ export function HomePage({ onNavigateDashboard }: HomePageProps) {
       </nav>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Minutes & Decisions card */}
+        <div className="mb-6 flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-slate-900 flex items-center justify-center">
+              <ScrollText className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">Minutes & Decisions</h3>
+              <p className="text-xs text-slate-500">Meeting minutes and key programme decisions</p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowMinutes(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors"
+          >
+            <ScrollText className="w-4 h-4" />
+            Open
+          </button>
+        </div>
+
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-2">
             <h2 className="text-3xl font-bold text-slate-900">
