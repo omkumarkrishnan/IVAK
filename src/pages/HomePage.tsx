@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { LogOut, User, RefreshCw, BarChart3, Trash2, UserPlus, Users, FileCheck } from 'lucide-react';
+import { LogOut, User, RefreshCw, BarChart3, Trash2, UserPlus, Users, FileCheck, ScrollText } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { DepartmentWithDLIs } from '../types/database';
 import { DepartmentList } from '../components/DepartmentList';
@@ -8,6 +8,7 @@ import { ConfirmationModal } from '../components/ConfirmationModal';
 import { AddUserModal } from '../components/AddUserModal';
 import { UserManagement } from '../components/UserManagement';
 import { BulkIVAUploadModal } from '../components/BulkIVAUploadModal';
+import { MinutesModal } from '../components/MinutesModal';
 
 interface HomePageProps {
   onNavigateDashboard: () => void;
@@ -23,6 +24,7 @@ export function HomePage({ onNavigateDashboard }: HomePageProps) {
   const [showAddUserModal, setShowAddUserModal] = useState(false);
   const [showUserManagement, setShowUserManagement] = useState(false);
   const [showBulkIVAUpload, setShowBulkIVAUpload] = useState(false);
+  const [showMinutes, setShowMinutes] = useState(false);
 
   const canUploadIVA = ['admin', 'consultant', 'field_agent', 'iva'].includes(profile?.role || '');
 
@@ -179,6 +181,13 @@ export function HomePage({ onNavigateDashboard }: HomePageProps) {
                 </button>
               )}
               <button
+                onClick={() => setShowMinutes(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-slate-700 text-white hover:bg-slate-600 rounded-lg transition-colors"
+              >
+                <ScrollText className="w-4 h-4" />
+                <span className="text-sm font-medium">Minutes & Decisions</span>
+              </button>
+              <button
                 onClick={fetchDepartments}
                 className="flex items-center gap-2 px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
               >
@@ -264,6 +273,13 @@ export function HomePage({ onNavigateDashboard }: HomePageProps) {
           onComplete={() => {
             fetchDepartments();
           }}
+        />
+      )}
+
+      {showMinutes && (
+        <MinutesModal
+          onClose={() => setShowMinutes(false)}
+          userRole={profile?.role}
         />
       )}
     </div>
