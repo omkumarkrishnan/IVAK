@@ -210,24 +210,18 @@ export function HomePage({ onNavigateDashboard }: HomePageProps) {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Minutes & Decisions card */}
-        <div className="mb-6 flex items-center justify-between p-4 bg-white border border-slate-200 rounded-xl shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-slate-900 flex items-center justify-center">
-              <ScrollText className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-slate-900">Minutes & Decisions</h3>
-              <p className="text-xs text-slate-500">Meeting minutes and key programme decisions</p>
-            </div>
+        <button
+          onClick={() => setShowMinutes(true)}
+          className="mb-6 w-full flex items-center gap-3 p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:border-slate-300 hover:shadow-md transition-all text-left"
+        >
+          <div className="w-10 h-10 rounded-lg bg-slate-900 flex items-center justify-center shrink-0">
+            <ScrollText className="w-5 h-5 text-white" />
           </div>
-          <button
-            onClick={() => setShowMinutes(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors"
-          >
-            <ScrollText className="w-4 h-4" />
-            Open
-          </button>
-        </div>
+          <div>
+            <h3 className="text-sm font-bold text-slate-900">Minutes & Decisions</h3>
+            <p className="text-xs text-slate-500">Meeting minutes and key programme decisions</p>
+          </div>
+        </button>
 
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-2">
