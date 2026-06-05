@@ -319,5 +319,8 @@ export async function generateStatusReport(): Promise<void> {
   });
 
   const blob = await Packer.toBlob(doc);
-  saveAs(blob, `Sikkim_INSPIRES_IVA_Status_Report_${new Date().toISOString().slice(0, 10)}.docx`);
+  const now = new Date();
+  const datePart = now.toISOString().slice(0, 10);
+  const timePart = `${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
+  saveAs(blob, `Sikkim_INSPIRES_IVA_Status_Report_${datePart}_${timePart}.docx`);
 }
