@@ -17,6 +17,7 @@ export function HomePage({ onNavigateDashboard }: HomePageProps) {
   const { profile, signOut } = useAuth();
   const [departments, setDepartments] = useState<DepartmentWithDLIs[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [clearing, setClearing] = useState(false);
   const [showAddUserModal, setShowAddUserModal] = useState(false);
@@ -31,8 +32,12 @@ export function HomePage({ onNavigateDashboard }: HomePageProps) {
     console.log('Is admin:', profile?.role === 'admin');
   }, [profile]);
 
-  const fetchDepartments = async () => {
-    setLoading(true);
+  const fetchDepartments = async (isInitial = false) => {
+    if (isInitial) {
+      setLoading(true);
+    } else {
+      setRefreshing(true);
+    }
     try {
       const { data: deptData, error: deptError } = await supabase
         .from('departments')
@@ -89,11 +94,12 @@ export function HomePage({ onNavigateDashboard }: HomePageProps) {
       console.error('Error fetching departments:', error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
   useEffect(() => {
-    fetchDepartments();
+    fetchDepartments(true);
   }, []);
 
   const handleClearData = async () => {
@@ -202,9 +208,14 @@ export function HomePage({ onNavigateDashboard }: HomePageProps) {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
-          <h2 className="text-3xl font-bold text-slate-900 mb-2">
-            Departments & DLIs
-          </h2>
+          <div className="flex items-center gap-3 mb-2">
+            <h2 className="text-3xl font-bold text-slate-900">
+              Departments & DLIs
+            </h2>
+            {refreshing && (
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-slate-600" />
+            )}
+          </div>
           <p className="text-slate-600">
             Manage Disbursement Linked Indicators and their verifications
           </p>
