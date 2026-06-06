@@ -30,13 +30,14 @@ const C = {
 // ── helpers ───────────────────────────────────────────────────────────────────
 function mkCell(
   text: string,
-  opts: { bold?: boolean; bg?: string; color?: string; width?: number; italic?: boolean } = {}
+  opts: { bold?: boolean; bg?: string; color?: string; width?: number; italic?: boolean; center?: boolean } = {}
 ): TableCell {
   return new TableCell({
     shading: opts.bg ? { type: ShadingType.SOLID, color: opts.bg, fill: opts.bg } : undefined,
     width: opts.width ? { size: opts.width, type: WidthType.PERCENTAGE } : undefined,
     children: [
       new Paragraph({
+        alignment: opts.center ? AlignmentType.CENTER : undefined,
         children: [new TextRun({ text, bold: opts.bold ?? false, italics: opts.italic ?? false, color: opts.color ?? '000000', size: 20 })],
         spacing: { before: 60, after: 60 },
       }),
@@ -44,8 +45,8 @@ function mkCell(
   });
 }
 
-function mkHeader(text: string, width?: number): TableCell {
-  return mkCell(text, { bold: true, bg: C.headerBg, color: C.headerText, width });
+function mkHeader(text: string, width?: number, center?: boolean): TableCell {
+  return mkCell(text, { bold: true, bg: C.headerBg, color: C.headerText, width, center });
 }
 
 function h1(text: string): Paragraph {
@@ -175,11 +176,11 @@ export async function generateStatusReport(): Promise<void> {
     layout: TableLayoutType.FIXED,
     width: { size: 100, type: WidthType.PERCENTAGE },
     rows: [
-      new TableRow({ tableHeader: true, children: [mkHeader('Status', 52), mkHeader('DLRs', 24), mkHeader('% of Total', 24)] }),
-      new TableRow({ children: [mkCell('Complete (all verification tasks done)',          { bg: C.complete    }), mkCell(String(completeDlrs.length),   { bold: true, bg: C.complete    }), mkCell(pct(completeDlrs.length),   { bg: C.complete    })] }),
-      new TableRow({ children: [mkCell('Incomplete (some verification tasks outstanding)', { bg: C.partial     }), mkCell(String(partialDlrs.length),    { bold: true, bg: C.partial     }), mkCell(pct(partialDlrs.length),    { bg: C.partial     })] }),
-      new TableRow({ children: [mkCell('Not yet started',                                  { bg: C.notStarted  }), mkCell(String(notStartedDlrs.length), { bold: true, bg: C.notStarted  }), mkCell(pct(notStartedDlrs.length), { bg: C.notStarted  })] }),
-      new TableRow({ children: [mkCell('Total DLRs', { bold: true }), mkCell(String(totalDlrs), { bold: true }), mkCell('100%')] }),
+      new TableRow({ tableHeader: true, children: [mkHeader('Status', 52), mkHeader('DLRs', 24, true), mkHeader('% of Total', 24, true)] }),
+      new TableRow({ children: [mkCell('Complete (all verification tasks done)',          { bg: C.complete    }), mkCell(String(completeDlrs.length),   { bold: true, bg: C.complete,   center: true }), mkCell(pct(completeDlrs.length),   { bg: C.complete,   center: true })] }),
+      new TableRow({ children: [mkCell('Incomplete (some verification tasks outstanding)', { bg: C.partial     }), mkCell(String(partialDlrs.length),    { bold: true, bg: C.partial,    center: true }), mkCell(pct(partialDlrs.length),    { bg: C.partial,    center: true })] }),
+      new TableRow({ children: [mkCell('Not yet started',                                  { bg: C.notStarted  }), mkCell(String(notStartedDlrs.length), { bold: true, bg: C.notStarted, center: true }), mkCell(pct(notStartedDlrs.length), { bg: C.notStarted, center: true })] }),
+      new TableRow({ children: [mkCell('Total DLRs', { bold: true }), mkCell(String(totalDlrs), { bold: true, center: true }), mkCell('100%', { center: true })] }),
     ],
   });
 
@@ -195,13 +196,13 @@ export async function generateStatusReport(): Promise<void> {
     layout: TableLayoutType.FIXED,
     width: { size: 100, type: WidthType.PERCENTAGE },
     rows: [
-      new TableRow({ tableHeader: true, children: [mkHeader('Department', 40), mkHeader('Total DLRs', 15), mkHeader('Complete', 15), mkHeader('Incomplete', 15), mkHeader('Not Started', 15)] }),
+      new TableRow({ tableHeader: true, children: [mkHeader('Department', 40), mkHeader('Total DLRs', 15, true), mkHeader('Complete', 15, true), mkHeader('Incomplete', 15, true), mkHeader('Not Started', 15, true)] }),
       ...deptSummaries.map(s => new TableRow({ children: [
         mkCell(s.name),
-        mkCell(String(s.total), { bold: true }),
-        mkCell(String(s.complete),   { bg: s.complete   > 0 ? C.complete   : undefined }),
-        mkCell(String(s.partial),    { bg: s.partial    > 0 ? C.partial    : undefined }),
-        mkCell(String(s.notStarted), { bg: s.notStarted > 0 ? C.notStarted : undefined }),
+        mkCell(String(s.total),       { bold: true, center: true }),
+        mkCell(String(s.complete),    { bg: s.complete   > 0 ? C.complete   : undefined, center: true }),
+        mkCell(String(s.partial),     { bg: s.partial    > 0 ? C.partial    : undefined, center: true }),
+        mkCell(String(s.notStarted),  { bg: s.notStarted > 0 ? C.notStarted : undefined, center: true }),
       ]})),
     ],
   });
